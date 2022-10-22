@@ -1,40 +1,96 @@
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import JsonResponse, HttpResponse
-from django.shortcuts import render
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework.generics import ListAPIView, RetrieveAPIView
-from rest_framework.parsers import JSONParser
-from rest_framework.response import Response
-from rest_framework.views import APIView
+from rest_framework.generics import RetrieveUpdateDestroyAPIView, ListCreateAPIView
 from .serializers import *
 
 
-class ExponentView(LoginRequiredMixin, ListAPIView):
+class ExponentView(ListCreateAPIView):
     queryset = Exponent.objects.all()
     serializer_class = ExponentSerializer
 
+    # def perform_create(self, serializer):
+    #     serializer.save(owner=self.request.user)
 
-@csrf_exempt
-@login_required
-def exponent_detail(request, pk):
-    try:
-        ex = Exponent.objects.get(pk=pk)
-    except Exponent.DoesNotExist:
-        return HttpResponse(status=404)
 
-    if request.method == 'GET':
-        serializer = ExponentSerializer(ex)
-        return JsonResponse(serializer.data)
+class ExponentDetailView(RetrieveUpdateDestroyAPIView):
+    queryset = Exponent.objects.all()
+    serializer_class = ExponentSerializer
 
-    elif request.method == 'PUT':
-        data = JSONParser().parse(request)
-        serializer = ExponentSerializer(ex, data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data)
-        return JsonResponse(serializer.errors, status=400)
+class CategoryView(ListCreateAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
 
-    elif request.method == 'DELETE':
-        ex.delete()
-        return HttpResponse(status=204)
+    # def perform_create(self, serializer):
+    #     serializer.save(owner=self.request.user)
+
+class CategoryDetailView(RetrieveUpdateDestroyAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
+class ProductView(ListCreateAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+
+    # def perform_create(self, serializer):
+    #     serializer.save(owner=self.request.user)
+
+class ProductDetailView(RetrieveUpdateDestroyAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+
+class CaseView(ListCreateAPIView):
+    queryset = Case.objects.all()
+    serializer_class = CaseSerializer
+
+    # def perform_create(self, serializer):
+    #     serializer.save(owner=self.request.user)
+
+class CaseDetailView(RetrieveUpdateDestroyAPIView):
+    queryset = Case.objects.all()
+    serializer_class = CaseSerializer
+
+
+class PartnerView(ListCreateAPIView):
+    queryset = Partner.objects.all()
+    serializer_class = PartnerSerializer
+
+    # def perform_create(self, serializer):
+    #     serializer.save(owner=self.request.user)
+
+class PartnerDetailView(RetrieveUpdateDestroyAPIView):
+    queryset = Partner.objects.all()
+    serializer_class = PartnerSerializer
+
+
+
+class ReviewView(ListCreateAPIView):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+
+    # def perform_create(self, serializer):
+    #     serializer.save(owner=self.request.user)
+
+class ReviewDetailView(RetrieveUpdateDestroyAPIView):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+
+
+class PublicationView(ListCreateAPIView):
+    queryset = Publication.objects.all()
+    serializer_class = PublicationSerializer
+
+    # def perform_create(self, serializer):
+    #     serializer.save(owner=self.request.user)
+
+class PublicationDetailView(RetrieveUpdateDestroyAPIView):
+    queryset = Publication.objects.all()
+    serializer_class = PublicationSerializer
+
+class LocationView(ListCreateAPIView):
+    queryset = Location.objects.all()
+    serializer_class = LocationSerializer
+
+    # def perform_create(self, serializer):
+    #     serializer.save(owner=self.request.user)
+
+class LocationDetailView(RetrieveUpdateDestroyAPIView):
+    queryset = Location.objects.all()
+    serializer_class = LocationSerializer

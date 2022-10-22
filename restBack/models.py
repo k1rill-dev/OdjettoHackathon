@@ -168,7 +168,7 @@ class ProductPhoto(models.Model):
 
 
 class Product(models.Model):
-    type = models.CharField(max_length=255, blank=True, null=False, default='Без типа', verbose_name='Тип')
+    type = models.CharField(max_length=255, blank=True, null=False, default='Без типа', verbose_name='Тип(товар/услуга)')
     manufacturer = models.CharField(max_length=255, blank=True, null=False, default='Нет производителя',
                                     verbose_name='Производитель')
     brand = models.CharField(max_length=255, blank=True, null=False, default='Нет бренда',
