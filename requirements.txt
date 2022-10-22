@@ -4,3 +4,4 @@ djoser
 psycopg2
 dj_database_url
 Pillow
+gunicorn
