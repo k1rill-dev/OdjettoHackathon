@@ -133,8 +133,15 @@ REST_FRAMEWORK = {
     ]
 }
 
-# DJOSER = {
-#     'ACTIVATION_URL': '#/activate/{uid}/{token}',
-#     'SEND_ACTIVATION_EMAIL': False,
-# }
+DJOSER = {
+    # 'ACTIVATION_URL': 'api/v1/auth/reset_password_confirm/?{uid}&{token}',
+    'SEND_ACTIVATION_EMAIL': False,
+    'PASSWORD_RESET_CONFIRM_URL': 'api/v1/auth/users/reset_password_confirm/?uid={uid}&token={token}',
+}
 AUTH_USER_MODEL = 'restBack.User'
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'testiki342@gmail.com'
+EMAIL_HOST_PASSWORD = 'brjexqjjuitmckho'
+EMAIL_PORT = 587
+
