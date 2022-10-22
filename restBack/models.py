@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 # Создаем класс менеджера пользователей
@@ -42,6 +44,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     id = models.AutoField(primary_key=True, unique=True)  # Идентификатор
     username = models.CharField(max_length=50, unique=True)  # Логин
     email = models.EmailField(max_length=100, unique=True)  # Email
+    # number = models.BigIntegerField()
     exponent = models.ForeignKey("Exponent", blank=True, null=True, on_delete=models.CASCADE)
     is_active = models.BooleanField(default=True)  # Статус активации
     is_staff = models.BooleanField(default=False)  # Статус админа
@@ -54,6 +57,17 @@ class User(AbstractBaseUser, PermissionsMixin):
     # Метод для отображения в админ панели
     def __str__(self):
         return self.email
+
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Exponent.objects.create(user=instance)
+
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    instance.exponent.save()
 
 
 class Exponent(models.Model):
