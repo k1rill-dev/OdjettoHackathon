@@ -4,59 +4,47 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 
-# Создаем класс менеджера пользователей
 class MyUserManager(BaseUserManager):
-    # Создаём метод для создания пользователя
     def _create_user(self, email, username, password, **extra_fields):
-        # Проверяем есть ли Email
         if not email:
-            # Выводим сообщение в консоль
             raise ValueError("Вы не ввели Email")
-        # Проверяем есть ли логин
         if not username:
-            # Выводим сообщение в консоль
             raise ValueError("Вы не ввели Логин")
-        # Делаем пользователя
         user = self.model(
             email=self.normalize_email(email),
             username=username,
             **extra_fields,
         )
-        # Сохраняем пароль
         user.set_password(password)
-        # Сохраняем всё остальное
         user.save(using=self._db)
-        # Возвращаем пользователя
         return user
 
-    # Делаем метод для создание обычного пользователя
     def create_user(self, email, username, password):
-        # Возвращаем нового созданного пользователя
         return self._create_user(email, username, password)
 
-    # Делаем метод для создание админа сайта
     def create_superuser(self, email, username, password):
-        # Возвращаем нового созданного админа
         return self._create_user(email, username, password, is_staff=True, is_superuser=True)
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    id = models.AutoField(primary_key=True, unique=True)  # Идентификатор
-    username = models.CharField(max_length=50, unique=True)  # Логин
-    email = models.EmailField(max_length=100, unique=True)  # Email
-    # number = models.BigIntegerField()
+    id = models.AutoField(primary_key=True, unique=True)
+    username = models.CharField(max_length=50, unique=True)
+    email = models.EmailField(max_length=100, unique=True)
     exponent = models.ForeignKey("Exponent", blank=True, null=True, on_delete=models.CASCADE)
-    is_active = models.BooleanField(default=True)  # Статус активации
-    is_staff = models.BooleanField(default=False)  # Статус админа
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
 
-    USERNAME_FIELD = 'email'  # Идентификатор для обращения
-    REQUIRED_FIELDS = ['username']  # Список имён полей для Superuser
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username']
 
-    objects = MyUserManager()  # Добавляем методы класса MyUserManager
+    objects = MyUserManager()
 
-    # Метод для отображения в админ панели
     def __str__(self):
         return self.email
+
+    class Meta:
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
 
 
 @receiver(post_save, sender=User)
@@ -109,6 +97,12 @@ class Exponent(models.Model):
     publications = models.ForeignKey("Publication", on_delete=models.PROTECT, blank=True, null=True, default=None,
                                      verbose_name='Публикации')
 
+    def __str__(self):
+        return f"{self.name}"
+    class Meta:
+        verbose_name = 'Экспонент'
+        verbose_name_plural = 'Экспоненты'
+
 
 class Publication(models.Model):
     name = models.CharField(max_length=255, blank=True, null=False, default='Нет имени', verbose_name='Наименование')
@@ -117,6 +111,12 @@ class Publication(models.Model):
     date_of_create = models.DateTimeField(auto_now_add=True, blank=True, null=True, verbose_name='Дата создания')
     comment = models.CharField(max_length=255, blank=True, null=False, default='Без комментария',
                                verbose_name='Комментарий от модератора')
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = 'Публикация'
+        verbose_name_plural = 'Публикации'
 
 
 class Catalog(models.Model):
@@ -125,6 +125,13 @@ class Catalog(models.Model):
     product = models.ManyToManyField("Product")
     publish_price = models.CharField(max_length=255, blank=True, null=False, default='Отображать произвольный текст',
                                      verbose_name='Отображение цен на сайте')
+
+    def __str__(self):
+        return f"{self.product.name}"
+
+    class Meta:
+        verbose_name = 'Каталог'
+        verbose_name_plural = 'Каталоги'
 
 
 class Location(models.Model):
@@ -138,12 +145,26 @@ class Location(models.Model):
                           verbose_name='Ссылка на сайт партнера')
     status = models.BooleanField(blank=True, null=False, default=False, verbose_name='Статус')
 
+    def __str__(self):
+        return f"{self.address}"
+
+    class Meta:
+        verbose_name = 'Локация'
+        verbose_name_plural = 'Локации'
+
 
 class Partner(models.Model):
     name = models.CharField(max_length=255, blank=True, null=False, default='Нет имени', verbose_name='Наименование')
     logo = models.ImageField(upload_to='logo_partner/%Y/%m/%d/', blank=True, null=True, verbose_name='Логотип партнера')
     display_order = models.IntegerField(blank=True, null=False, default=0, verbose_name='Порядок отображения')
     is_published = models.CharField(max_length=255, blank=True, null=False, default='Нет', verbose_name='Публикация')
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = 'Партнер'
+        verbose_name_plural = 'Партнеры'
 
 
 class Review(models.Model):
@@ -156,15 +177,31 @@ class Review(models.Model):
                                 verbose_name='Картинка в отзыве')
     is_published = models.CharField(max_length=255, blank=True, null=False, default='Нет', verbose_name='Публикация')
 
+    def __str__(self):
+        return f"{self.author} - {self.text[:10]}"
+    class Meta:
+        verbose_name = 'Отзыв'
+        verbose_name_plural = 'Отзывы'
+
 
 class Category(models.Model):
     name = models.CharField(max_length=255, blank=True, null=False, default='Нет имени', verbose_name='Наименование')
     date_of_create = models.DateTimeField(auto_now_add=True, blank=True, null=True, verbose_name='Дата создания')
     is_published = models.CharField(max_length=255, blank=True, null=False, default='Нет', verbose_name='Публикация')
 
+    def __str__(self):
+        return f"{self.name}"
+    class Meta:
+        verbose_name = 'Категория'
+        verbose_name_plural = 'Категории'
+
 
 class ProductPhoto(models.Model):
     image = models.ImageField(upload_to='pic_review/%Y/%m/%d/', blank=True, null=True, verbose_name='Фото товара')
+
+    class Meta:
+        verbose_name = 'Фото продукта'
+        verbose_name_plural = 'Фото продукта'
 
 
 class Product(models.Model):
@@ -197,6 +234,12 @@ class Product(models.Model):
     is_published = models.CharField(max_length=255, blank=True, null=False, default='Нет', verbose_name='Публикация')
     import_substitution = models.BooleanField(blank=True, null=False, default=True, verbose_name='Импортозамещение')
 
+    def __str__(self):
+        return f"{self.name}, {self.type}"
+    class Meta:
+        verbose_name = 'Продукт'
+        verbose_name_plural = 'Продукты'
+
 
 class Case(models.Model):
     name = models.CharField(max_length=255, blank=True, null=False, default='Нет имени', verbose_name='Наименование')
@@ -208,3 +251,9 @@ class Case(models.Model):
                                 verbose_name='Ссылка на видео')
     is_published = models.CharField(max_length=255, blank=True, null=False, default='Нет', verbose_name='Публикация')
     import_substitution = models.BooleanField(blank=True, null=False, default=True, verbose_name='Импортозамещение')
+
+    def __str__(self):
+        return f"{self.name}, {self.type}"
+    class Meta:
+        verbose_name = 'Кейс'
+        verbose_name_plural = 'Кейсы'

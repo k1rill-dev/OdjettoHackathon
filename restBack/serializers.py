@@ -77,6 +77,7 @@ class PublicationSerializer(serializers.ModelSerializer):
         model = Publication
         fields = '__all__'
 
+
 class LocationSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         return Location.objects.create(**validated_data)
