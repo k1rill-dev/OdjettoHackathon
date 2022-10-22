@@ -24,7 +24,7 @@ SECRET_KEY = 'django-insecure-tlk%s%1)38svpyoo^x-%i-kpj@)^&todjf47$y8)b2abj4i4!0
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rest_framework',
     'djoser',
+
 ]
 
 MIDDLEWARE = [
@@ -48,6 +49,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
@@ -75,13 +77,24 @@ WSGI_APPLICATION = 'hack.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'postgres',
+#         'USER': 'postgres',
+#         'PASSWORD': 'lolkek123',
+#         'HOST': 'localhost',
+#         'PORT': 5432,
+#     }
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': 'lolkek123',
-        'HOST': 'localhost',
+        'NAME': 'dr38tqge2vaoe',
+        'USER': 'veqhnkgdniuslr',
+        'PASSWORD': '65be895abd6e95ffe10bd7e960fc914ffc567220a8bdf6826b542fe14f21e5c0',
+        'HOST': 'ec2-54-246-185-161.eu-west-1.compute.amazonaws.com',
         'PORT': 5432,
     }
 }
@@ -144,4 +157,8 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'testiki342@gmail.com'
 EMAIL_HOST_PASSWORD = 'brjexqjjuitmckho'
 EMAIL_PORT = 587
+
+import dj_database_url
+db_from_env = dj_database_url.config(conn_max_age=500)
+DATABASES['default'].update(db_from_env)
 

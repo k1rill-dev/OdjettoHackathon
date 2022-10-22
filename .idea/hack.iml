@@ -24,7 +24,7 @@
     <option name="TEMPLATE_FOLDERS">
       <list>
         <option value="$MODULE_DIR$/restBack/templates" />
-        <option value="$MODULE_DIR$/restBack/templates/restBack" />
+        <option value="$MODULE_DIR$/restBack/templates/restBak" />
       </list>
     </option>
   </component>
