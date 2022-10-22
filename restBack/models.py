@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-from django.db.models.signals import post_save
-from django.dispatch import receiver
+
 
 
 class MyUserManager(BaseUserManager):
@@ -47,17 +46,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name_plural = 'Пользователи'
 
 
-# @receiver(post_save, sender=User)
-# def create_user_profile(sender, instance, created, **kwargs):
-#     if created:
-#         Exponent.objects.create(user=instance)
-#
-#
-# @receiver(post_save, sender=User)
-# def save_user_profile(sender, instance, **kwargs):
-#     instance.exponent.save()
-
-
 class Exponent(models.Model):
     name = models.CharField(max_length=180, blank=True, null=False, default='Нет имени',
                             verbose_name='Наименование экспонента')
@@ -78,27 +66,21 @@ class Exponent(models.Model):
                                  verbose_name='Категория')
     fio_contact = models.CharField(max_length=255, blank=True, null=False, default='Нет контактного лица',
                                    verbose_name='ФИО контактного лица')
-    inn_exponent = models.BigIntegerField(blank=True, null=False, default=0, verbose_name='ИНН экспонента')
+    inn_exponent = models.BigIntegerField(blank=True, null=False, unique=True, verbose_name='ИНН экспонента')
     urid_address = models.CharField(max_length=255, blank=True, null=False, default='Нет адреса',
                                     verbose_name='Юридический адрес')
     prod_address = models.CharField(max_length=255, blank=True, null=False, default='Нет адреса',
                                     verbose_name='Адрес производства')
-    locations = models.ForeignKey("Location", on_delete=models.PROTECT, blank=True, null=True, default=None,
-                                  verbose_name='Локации')
-    partners = models.ForeignKey("Partner", on_delete=models.PROTECT, blank=True, null=True, default=None,
-                                 verbose_name='Партнеры/клиенты компании')
-    review = models.ForeignKey("Review", on_delete=models.PROTECT, blank=True, null=True, default=None,
-                               verbose_name='Отзывы партнеров')
     catalog = models.ForeignKey("Catalog", on_delete=models.PROTECT, blank=True, null=True, default=None,
                                 verbose_name='Каталог компании')
-    portfolio = models.ForeignKey("Case", on_delete=models.PROTECT, blank=True, null=True, default=None,
-                                  verbose_name='Портфолио')
     import_substitution = models.BooleanField(blank=True, null=False, default=True, verbose_name='Импортозамещение')
-    publications = models.ForeignKey("Publication", on_delete=models.PROTECT, blank=True, null=True, default=None,
-                                     verbose_name='Публикации')
+    moderation_passed = models.BooleanField(blank=True, null=True, default=False, verbose_name='Прошло ли модерацию')
+    moder_comment = models.CharField(max_length=255, blank=True, null=True, default='Комментарий отсутствует',
+                                     verbose_name='Комментарий от модератора')
 
     def __str__(self):
         return f"{self.name}"
+
     class Meta:
         verbose_name = 'Экспонент'
         verbose_name_plural = 'Экспоненты'
@@ -109,8 +91,12 @@ class Publication(models.Model):
     type = models.CharField(max_length=255, blank=True, null=False, default='Без типа', verbose_name='Тип')
     is_published = models.CharField(max_length=255, blank=True, null=False, default='Нет', verbose_name='Публикация')
     date_of_create = models.DateTimeField(auto_now_add=True, blank=True, null=True, verbose_name='Дата создания')
-    comment = models.CharField(max_length=255, blank=True, null=False, default='Без комментария',
-                               verbose_name='Комментарий от модератора')
+    exponent = models.ForeignKey(Exponent, on_delete=models.CASCADE, blank=True, null=True, default=None,
+                                 verbose_name='Экспонент')
+    moderation_passed = models.BooleanField(blank=True, null=True, default=False, verbose_name='Прошло ли модерацию')
+    moder_comment = models.CharField(max_length=255, blank=True, null=True, default='Комментарий отсутствует',
+                                     verbose_name='Комментарий от модератора')
+
     def __str__(self):
         return f"{self.name}"
 
@@ -122,12 +108,11 @@ class Publication(models.Model):
 class Catalog(models.Model):
     category = models.ForeignKey("Category", on_delete=models.PROTECT, blank=True, null=True, default=None,
                                  verbose_name='Категория')
-    product = models.ManyToManyField("Product")
     publish_price = models.CharField(max_length=255, blank=True, null=False, default='Отображать произвольный текст',
                                      verbose_name='Отображение цен на сайте')
 
     def __str__(self):
-        return f"{self.product.name}"
+        return f"{self.category}"
 
     class Meta:
         verbose_name = 'Каталог'
@@ -143,7 +128,12 @@ class Location(models.Model):
                                            verbose_name='Тип сотрудничества')
     url = models.URLField(max_length=256, blank=True, null=False, default='Нет ссылки',
                           verbose_name='Ссылка на сайт партнера')
+    exponent = models.ForeignKey(Exponent, on_delete=models.CASCADE, blank=True, null=True, default=None,
+                                 verbose_name='Экспонент')
     status = models.BooleanField(blank=True, null=False, default=False, verbose_name='Статус')
+    moderation_passed = models.BooleanField(blank=True, null=True, default=False, verbose_name='Прошло ли модерацию')
+    moder_comment = models.CharField(max_length=255, blank=True, null=True, default='Комментарий отсутствует',
+                                     verbose_name='Комментарий от модератора')
 
     def __str__(self):
         return f"{self.address}"
@@ -156,6 +146,8 @@ class Location(models.Model):
 class Partner(models.Model):
     name = models.CharField(max_length=255, blank=True, null=False, default='Нет имени', verbose_name='Наименование')
     logo = models.ImageField(upload_to='logo_partner/%Y/%m/%d/', blank=True, null=True, verbose_name='Логотип партнера')
+    exponent = models.ForeignKey(Exponent, on_delete=models.CASCADE, blank=True, null=True, default=None,
+                                 verbose_name='Экспонент')
     display_order = models.IntegerField(blank=True, null=False, default=0, verbose_name='Порядок отображения')
     is_published = models.CharField(max_length=255, blank=True, null=False, default='Нет', verbose_name='Публикация')
 
@@ -176,9 +168,15 @@ class Review(models.Model):
     picture = models.ImageField(upload_to='pic_review/%Y/%m/%d/', blank=True, null=True,
                                 verbose_name='Картинка в отзыве')
     is_published = models.CharField(max_length=255, blank=True, null=False, default='Нет', verbose_name='Публикация')
+    exponent = models.ForeignKey(Exponent, on_delete=models.CASCADE, blank=True, null=True, default=None,
+                                 verbose_name='Экспонент')
+    moderation_passed = models.BooleanField(blank=True, null=True, default=False, verbose_name='Прошло ли модерацию')
+    moder_comment = models.CharField(max_length=255, blank=True, null=True, default='Комментарий отсутствует',
+                                     verbose_name='Комментарий от модератора')
 
     def __str__(self):
         return f"{self.author} - {self.text[:10]}"
+
     class Meta:
         verbose_name = 'Отзыв'
         verbose_name_plural = 'Отзывы'
@@ -188,9 +186,13 @@ class Category(models.Model):
     name = models.CharField(max_length=255, blank=True, null=False, default='Нет имени', verbose_name='Наименование')
     date_of_create = models.DateTimeField(auto_now_add=True, blank=True, null=True, verbose_name='Дата создания')
     is_published = models.CharField(max_length=255, blank=True, null=False, default='Нет', verbose_name='Публикация')
+    moderation_passed = models.BooleanField(blank=True, null=True, default=False, verbose_name='Прошло ли модерацию')
+    moder_comment = models.CharField(max_length=255, blank=True, null=True, default='Комментарий отсутствует',
+                                     verbose_name='Комментарий от модератора')
 
     def __str__(self):
         return f"{self.name}"
+
     class Meta:
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
@@ -198,6 +200,8 @@ class Category(models.Model):
 
 class ProductPhoto(models.Model):
     image = models.ImageField(upload_to='pic_review/%Y/%m/%d/', blank=True, null=True, verbose_name='Фото товара')
+    product = models.ForeignKey("Product", on_delete=models.PROTECT, blank=True, null=True, default=None,
+                                verbose_name='Сам товар')
 
     class Meta:
         verbose_name = 'Фото продукта'
@@ -205,15 +209,13 @@ class ProductPhoto(models.Model):
 
 
 class Product(models.Model):
-    type = models.CharField(max_length=255, blank=True, null=False, default='Без типа', verbose_name='Тип(товар/услуга)')
+    type = models.CharField(max_length=255, blank=True, null=False, default='Без типа',
+                            verbose_name='Тип(товар/услуга)')
     manufacturer = models.CharField(max_length=255, blank=True, null=False, default='Нет производителя',
                                     verbose_name='Производитель')
     brand = models.CharField(max_length=255, blank=True, null=False, default='Нет бренда',
                              verbose_name='Бренд/торговая марка')
     name = models.CharField(max_length=255, blank=True, null=False, default='Нет имени', verbose_name='Наименование')
-    picture = models.ForeignKey("ProductPhoto", on_delete=models.PROTECT, blank=True, null=True, default=None,
-                                verbose_name='Фото товара')
-
     video = models.FileField(upload_to='video_product/%Y/%m/%d/', null=True, blank=True, verbose_name='Видео продукта')
     description = models.CharField(max_length=255, blank=True, null=False, default='Нет описания',
                                    verbose_name='Описание товара')
@@ -231,11 +233,17 @@ class Product(models.Model):
                                 verbose_name='Соответствие стандартам')
     analog = models.CharField(max_length=255, null=True, blank=False, default='УНИКАЛЕЕЕЕЕЕЕЕЕЕЕН',
                               verbose_name='Аналоги')
+    catalog = models.ForeignKey(Catalog, on_delete=models.CASCADE, blank=True, null=True, default=None,
+                                 verbose_name='Каталог')
     is_published = models.CharField(max_length=255, blank=True, null=False, default='Нет', verbose_name='Публикация')
     import_substitution = models.BooleanField(blank=True, null=False, default=True, verbose_name='Импортозамещение')
+    moderation_passed = models.BooleanField(blank=True, null=True, default=False, verbose_name='Прошло ли модерацию')
+    moder_comment = models.CharField(max_length=255, blank=True, null=True, default='Комментарий отсутствует',
+                                     verbose_name='Комментарий от модератора')
 
     def __str__(self):
         return f"{self.name}, {self.type}"
+
     class Meta:
         verbose_name = 'Продукт'
         verbose_name_plural = 'Продукты'
@@ -251,9 +259,15 @@ class Case(models.Model):
                                 verbose_name='Ссылка на видео')
     is_published = models.CharField(max_length=255, blank=True, null=False, default='Нет', verbose_name='Публикация')
     import_substitution = models.BooleanField(blank=True, null=False, default=True, verbose_name='Импортозамещение')
+    exponent = models.ForeignKey(Exponent, on_delete=models.CASCADE, blank=True, null=True, default=None,
+                                 verbose_name='Экспонент')
+    moderation_passed = models.BooleanField(blank=True, null=True, default=False, verbose_name='Прошло ли модерацию')
+    moder_comment = models.CharField(max_length=255, blank=True, null=True, default='Комментарий отсутствует',
+                                     verbose_name='Комментарий от модератора')
 
     def __str__(self):
         return f"{self.name}, {self.type}"
+
     class Meta:
         verbose_name = 'Кейс'
         verbose_name_plural = 'Кейсы'

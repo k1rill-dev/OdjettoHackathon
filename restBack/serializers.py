@@ -21,7 +21,7 @@ class ExponentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Exponent
         exclude = ['title', 'meta_keywords', 'meta_description', 'logo', 'main_picture', 'import_substitution',
-                   'publications', 'description']
+                   'description']
 
 
 class CategorySerializer(serializers.ModelSerializer):
