@@ -20,4 +20,6 @@ urlpatterns = [
     path('api/v1/publucation/<int:pk>', PublicationDetailView.as_view(), name='publucation'),
     path('api/v1/locations', LocationView.as_view(), name='get_locs'),
     path('api/v1/location/<int:pk>', LocationDetailView.as_view(), name='locations'),
+    path('api/v1/catalogs', CatalogView.as_view(), name='get_catalogs'),
+    path('api/v1/catalog/<int:pk>', CatalogDetailView.as_view(), name='catalog'),
 ]

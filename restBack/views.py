@@ -94,3 +94,14 @@ class LocationView(ListCreateAPIView):
 class LocationDetailView(RetrieveUpdateDestroyAPIView):
     queryset = Location.objects.all()
     serializer_class = LocationSerializer
+
+class CatalogView(ListCreateAPIView):
+    queryset = Catalog.objects.all()
+    serializer_class = CatalogSerializer
+
+    # def perform_create(self, serializer):
+    #     serializer.save(owner=self.request.user)
+
+class CatalogDetailView(RetrieveUpdateDestroyAPIView):
+    queryset = Catalog.objects.all()
+    serializer_class = CatalogSerializer

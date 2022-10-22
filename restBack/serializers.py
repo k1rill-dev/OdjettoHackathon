@@ -39,7 +39,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        exclude = ['picture', 'video', 'tags', 'is_published']
+        exclude = ['video', 'tags', 'is_published']
 
 
 class CaseSerializer(serializers.ModelSerializer):
@@ -84,4 +84,12 @@ class LocationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Location
+        fields = '__all__'
+
+class CatalogSerializer(serializers.ModelSerializer):
+    def create(self, validated_data):
+        return Catalog.objects.create(**validated_data)
+
+    class Meta:
+        model = Catalog
         fields = '__all__'
