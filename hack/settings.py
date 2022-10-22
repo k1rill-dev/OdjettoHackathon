@@ -77,27 +77,27 @@ WSGI_APPLICATION = 'hack.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': 'lolkek123',
-        'HOST': 'localhost',
-        'PORT': 5432,
-    }
-}
-
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'd22ne114rtn579',
-#         'USER': 'shdqmlkurtzykz',
-#         'PASSWORD': 'bb0c78478f4de6a7fdc3ded4ba74b69d15a44d6ce8d80fae29c0f0d7acd9a8a7',
-#         'HOST': 'ec2-52-4-87-74.compute-1.amazonaws.com',
+#         'NAME': 'postgres',
+#         'USER': 'postgres',
+#         'PASSWORD': 'lolkek123',
+#         'HOST': 'localhost',
 #         'PORT': 5432,
 #     }
 # }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'd22ne114rtn579',
+        'USER': 'shdqmlkurtzykz',
+        'PASSWORD': 'bb0c78478f4de6a7fdc3ded4ba74b69d15a44d6ce8d80fae29c0f0d7acd9a8a7',
+        'HOST': 'ec2-52-4-87-74.compute-1.amazonaws.com',
+        'PORT': 5432,
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
