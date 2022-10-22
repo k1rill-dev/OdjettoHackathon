@@ -91,10 +91,10 @@ WSGI_APPLICATION = 'hack.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'd18i1g0glahrts',
-        'USER': 'ccdhepqxekxnry',
-        'PASSWORD': '09a344c5a84093f345eba66ce0f7269a0fcefb6c5a4eb99e0980331baf9baec9',
-        'HOST': 'ec2-54-147-36-107.compute-1.amazonaws.com',
+        'NAME': 'd22ne114rtn579',
+        'USER': 'shdqmlkurtzykz',
+        'PASSWORD': 'bb0c78478f4de6a7fdc3ded4ba74b69d15a44d6ce8d80fae29c0f0d7acd9a8a7',
+        'HOST': 'ec2-52-4-87-74.compute-1.amazonaws.com',
         'PORT': 5432,
     }
 }
