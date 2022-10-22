@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'restBack.apps.RestbackConfig',
+    'rest_framework.authtoken',
     'rest_framework',
     'djoser',
 ]
