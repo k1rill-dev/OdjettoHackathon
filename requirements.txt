@@ -3,3 +3,4 @@ djangorestframework~=3.14.0
 djoser
 psycopg2
 dj_database_url
+Pillow
