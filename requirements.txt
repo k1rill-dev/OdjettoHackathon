@@ -6,3 +6,4 @@ dj_database_url
 Pillow
 gunicorn
 whitenoise
+django-cors-headers

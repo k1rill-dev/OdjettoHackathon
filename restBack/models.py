@@ -97,6 +97,7 @@ def create_profile(sender, instance, created, **kwargs):
                   'Новый экспонент/каталог зарегистрирован, проверьте админ-панель!',
                   EMAIL_HOST_USER, [user.email])
 
+
 class Publication(models.Model):
     name = models.CharField(max_length=255, blank=True, null=False, default='Нет имени', verbose_name='Наименование')
     type = models.CharField(max_length=255, blank=True, null=False, default='Без типа', verbose_name='Тип')
@@ -245,7 +246,7 @@ class Product(models.Model):
     analog = models.CharField(max_length=255, null=True, blank=False, default='УНИКАЛЕЕЕЕЕЕЕЕЕЕЕН',
                               verbose_name='Аналоги')
     catalog = models.ForeignKey(Catalog, on_delete=models.CASCADE, blank=True, null=True, default=None,
-                                 verbose_name='Каталог')
+                                verbose_name='Каталог')
     is_published = models.CharField(max_length=255, blank=True, null=False, default='Нет', verbose_name='Публикация')
     import_substitution = models.BooleanField(blank=True, null=False, default=True, verbose_name='Импортозамещение')
     moderation_passed = models.BooleanField(blank=True, null=True, default=False, verbose_name='Прошло ли модерацию')
