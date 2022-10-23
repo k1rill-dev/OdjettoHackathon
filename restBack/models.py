@@ -1,6 +1,9 @@
+from django.core.mail import send_mail
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from hack.settings import EMAIL_HOST_USER
 
 
 class MyUserManager(BaseUserManager):
@@ -85,6 +88,14 @@ class Exponent(models.Model):
         verbose_name = 'Экспонент'
         verbose_name_plural = 'Экспоненты'
 
+
+@receiver(post_save, sender=Exponent)
+def create_profile(sender, instance, created, **kwargs):
+    user = User.objects.get(is_staff=True)
+    if created:
+        send_mail(f'Уведомление от администрации',
+                  'Новый экспонент/каталог зарегистрирован, проверьте админ-панель!',
+                  EMAIL_HOST_USER, [user.email])
 
 class Publication(models.Model):
     name = models.CharField(max_length=255, blank=True, null=False, default='Нет имени', verbose_name='Наименование')

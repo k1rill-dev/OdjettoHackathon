@@ -173,8 +173,8 @@ DJOSER = {
 AUTH_USER_MODEL = 'restBack.User'
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'testiki342@gmail.com'
-EMAIL_HOST_PASSWORD = 'brjexqjjuitmckho'
+EMAIL_HOST_USER = 'sender.email.django@gmail.com'
+EMAIL_HOST_PASSWORD = 'cgkzcemvqnmeblug'
 EMAIL_PORT = 587
 
 import dj_database_url
